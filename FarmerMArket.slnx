@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/FarmerProject/">
+    <Project Path="FarmerProject/Api/Api.csproj" />
+    <Project Path="FarmerProject/Domain/Domain.csproj" />
+    <Project Path="FarmerProject/Infrastruction/Infrastruction.csproj" />
+  </Folder>
+  <Folder Name="/FarmerProject/Application/">
+    <Project Path="FarmerProject/Application/Application.csproj" />
+  </Folder>
+</Solution>
