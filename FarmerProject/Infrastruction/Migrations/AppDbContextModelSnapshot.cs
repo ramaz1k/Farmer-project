@@ -118,6 +118,9 @@ namespace Infrastruction.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("FarmerProfileId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -127,6 +130,8 @@ namespace Infrastruction.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BuyerId");
+
+                    b.HasIndex("FarmerProfileId");
 
                     b.ToTable("Orders");
                 });
@@ -289,7 +294,15 @@ namespace Infrastruction.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.FarmerProfile", "FarmerProfile")
+                        .WithMany()
+                        .HasForeignKey("FarmerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Buyer");
+
+                    b.Navigation("FarmerProfile");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
