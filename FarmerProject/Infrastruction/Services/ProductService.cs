@@ -33,10 +33,42 @@ public class ProductService : IProductService
         FarmerRegion = p.FarmerProfile.Region
     };
 
-    public async Task<List<ProductDto>> GetAllAsync()
+public async Task<PagedResult<ProductDto>> GetAllAsync(ProductQueryDto query)
+{
+    var products = _db.Products.AsQueryable();
+
+    if (query.CategoryId is not null)
+        products = products.Where(p => p.CategoryId == query.CategoryId.Value);
+
+    if (!string.IsNullOrWhiteSpace(query.Region))
+        products = products.Where(p => EF.Functions.ILike(p.FarmerProfile.Region, query.Region));
+
+    if (!string.IsNullOrWhiteSpace(query.Search))
+        products = products.Where(p => EF.Functions.ILike(p.Title, $"%{query.Search}%"));
+
+    if (query.MinPrice is not null)
+        products = products.Where(p => p.Price >= query.MinPrice.Value);
+
+    if (query.MaxPrice is not null)
+        products = products.Where(p => p.Price <= query.MaxPrice.Value);
+
+    var total = await products.CountAsync();
+
+    var items = await products
+        .OrderBy(p => p.Id)
+        .Skip((query.Page - 1) * query.PageSize)
+        .Take(query.PageSize)
+        .Select(ToDto)
+        .ToListAsync();
+
+    return new PagedResult<ProductDto>
     {
-        return await _db.Products.Select(ToDto).ToListAsync();
-    }
+        Items = items,
+        TotalCount = total,
+        Page = query.Page,
+        PageSize = query.PageSize
+    };
+}
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {

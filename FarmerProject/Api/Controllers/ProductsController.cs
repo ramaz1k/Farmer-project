@@ -20,11 +20,11 @@ public class ProductsController : ControllerBase
     private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductDto>>> GetAll()
-    {
-        return Ok(await _productService.GetAllAsync());
-    }
-
+ [HttpGet]
+public async Task<ActionResult<PagedResult<ProductDto>>> GetAll([FromQuery] ProductQueryDto query)
+{
+    return Ok(await _productService.GetAllAsync(query));
+}
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ProductDto>> GetById(int id)
     {
