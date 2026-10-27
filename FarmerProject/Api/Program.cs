@@ -1,4 +1,5 @@
 using System.Text;
+using Api.Middleware;
 using Application.Interfaces;
 using Infrastruction.Data;
 using Infrastruction.Services;
@@ -40,6 +41,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
