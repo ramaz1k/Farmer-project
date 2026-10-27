@@ -243,7 +243,8 @@ namespace Infrastruction.Migrations
 
                     b.HasIndex("FarmerProfileId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("Reviews");
                 });

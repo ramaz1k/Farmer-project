@@ -26,5 +26,7 @@ public class AppDbContext : DbContext
         new Category { Id = 5, Name = "Мясо" },
         new Category { Id = 6, Name = "Молочные продукты" }
     );
+modelBuilder.Entity<Review>().HasIndex(r => r.OrderId).IsUnique();
 }
+
 }
