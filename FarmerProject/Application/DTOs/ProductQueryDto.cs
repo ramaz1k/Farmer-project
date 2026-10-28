@@ -9,6 +9,7 @@ public class ProductQueryDto
     public string? Search { get; set; }
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
+    public int? FarmerProfileId { get; set; }
 
     [Range(1, int.MaxValue)]
     public int Page { get; set; } = 1;

@@ -56,10 +56,14 @@ export default function Profile() {
           {profile.region} · {profile.phone}
         </p>
         <p>{profile.description || 'Без описания.'}</p>
-        <p className="muted">Профиль уже создан — редактирование появится позже.</p>
-        <Link to="/" className="btn">
-          В каталог
-        </Link>
+        <div className="order-actions">
+          <Link to="/my-products" className="btn">
+            Мои товары
+          </Link>
+          <Link to="/" className="btn btn-outline">
+            В каталог
+          </Link>
+        </div>
       </div>
     )
   }
@@ -133,6 +137,7 @@ export default function Profile() {
       <button className="btn" disabled={busy}>
         {busy ? 'Создаём…' : 'Создать профиль'}
       </button>
+      <p className="muted">Сразу после создания можно будет добавить первое объявление.</p>
     </form>
   )
 }

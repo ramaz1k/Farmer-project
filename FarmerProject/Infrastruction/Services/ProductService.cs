@@ -52,6 +52,9 @@ public async Task<PagedResult<ProductDto>> GetAllAsync(ProductQueryDto query)
     if (query.MaxPrice is not null)
         products = products.Where(p => p.Price <= query.MaxPrice.Value);
 
+    if (query.FarmerProfileId is not null)
+        products = products.Where(p => p.FarmerProfileId == query.FarmerProfileId.Value);
+
     var total = await products.CountAsync();
 
     var items = await products
