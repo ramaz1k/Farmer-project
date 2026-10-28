@@ -20,7 +20,8 @@ function Header() {
   return (
     <header className="header">
       <Link to="/" className="logo">
-        🥕 FarmMarket
+        <span className="logo-icon">🥕</span>
+        FarmMarket
       </Link>
       <nav>
         <Link to="/">Каталог</Link>
@@ -114,6 +115,12 @@ export default function App() {
           <Route path="*" element={<p>Страница не найдена</p>} />
         </Routes>
       </main>
+      <footer className="footer">
+        <span>
+          <strong>🥕 FarmMarket</strong> — фермерский рынок Кыргызстана
+        </span>
+        <span>Свежие продукты напрямую от фермеров · {new Date().getFullYear()}</span>
+      </footer>
     </>
   )
 }

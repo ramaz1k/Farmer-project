@@ -11,6 +11,15 @@ const CATEGORIES = [
   { id: 6, name: 'Молочные продукты' },
 ]
 
+const EMOJI = {
+  1: '🍎',
+  2: '🥬',
+  3: '🥜',
+  4: '🍯',
+  5: '🍖',
+  6: '🥛',
+}
+
 const PAGE_SIZE = 8
 
 export default function Catalog() {
@@ -61,20 +70,41 @@ export default function Catalog() {
 
   return (
     <>
-      <h1>Каталог фермерских продуктов</h1>
+      <section className="hero">
+        <div>
+          <span className="hero-kicker">Фермерский рынок Кыргызстана</span>
+          <h1>Свежие продукты напрямую с фермы</h1>
+          <p>
+            Фрукты, овощи, мёд и молочные продукты от местных фермеров — без
+            посредников, по честным ценам и с заботой о качестве.
+          </p>
+        </div>
+        <div className="hero-art" aria-hidden="true">
+          🥕
+        </div>
+      </section>
+
+      <div className="chips">
+        <button
+          type="button"
+          className={`chip ${!filters.categoryId ? 'active' : ''}`}
+          onClick={() => set('categoryId', '')}
+        >
+          🧺 Все категории
+        </button>
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            className={`chip ${String(filters.categoryId) === String(c.id) ? 'active' : ''}`}
+            onClick={() => set('categoryId', String(c.id))}
+          >
+            {EMOJI[c.id]} {c.name}
+          </button>
+        ))}
+      </div>
 
       <div className="filters">
-        <select
-          value={filters.categoryId}
-          onChange={(e) => set('categoryId', e.target.value)}
-        >
-          <option value="">Все категории</option>
-          {CATEGORIES.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
         <input
           placeholder="Регион (например, Khatlon)"
           value={filters.region}
@@ -109,6 +139,7 @@ export default function Catalog() {
       <div className="grid">
         {data.items.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="card">
+            <span className="card-emoji">{EMOJI[p.categoryId] || '🧺'}</span>
             <span className="title">{p.title}</span>
             <span className="meta">
               {p.categoryName} · {p.farmerName} ({p.farmerRegion})
