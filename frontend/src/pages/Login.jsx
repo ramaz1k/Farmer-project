@@ -59,6 +59,7 @@ export default function Login() {
 export function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState(0)
@@ -70,8 +71,9 @@ export function Register() {
     setError('')
     setBusy(true)
     try {
-      await register(email, password, role)
-      navigate('/')
+      const res = await register(email, password, role)
+      // фермер сразу идёт создавать профиль — без него нечем работать
+      navigate(res.role === 'Farmer' ? '/profile' : '/')
     } catch (err) {
       setError(err.message)
     } finally {

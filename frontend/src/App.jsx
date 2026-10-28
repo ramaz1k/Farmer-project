@@ -7,6 +7,7 @@ import FarmerPage from './pages/Farmer'
 import Login, { Register } from './pages/Login'
 import Cart from './pages/Cart'
 import Orders from './pages/Orders'
+import Profile from './pages/Profile'
 
 function Header() {
   const { user, logout } = useAuth()
@@ -25,6 +26,7 @@ function Header() {
         <Link to="/cart" className="cart-link">
           Корзина{count > 0 && <span className="badge">{count}</span>}
         </Link>
+        {user?.role === 'Farmer' && <Link to="/profile">Мой профиль</Link>}
         {user ? (
           <span className="user">
             {user.email}
@@ -78,6 +80,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <Orders />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <Profile />
               </RequireAuth>
             }
           />
