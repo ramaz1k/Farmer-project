@@ -51,6 +51,21 @@ public class FarmerService : IFarmerService
         return profile is null ? null : ToDto(profile);
     }
 
+    public async Task<FarmerProfileDto?> UpdateMyProfileAsync(int userId, CreateFarmerProfileDto dto)
+    {
+        var profile = await _db.FarmerProfiles.FirstOrDefaultAsync(f => f.UserId == userId);
+        if (profile is null)
+            return null;
+
+        profile.Name = dto.Name;
+        profile.Region = dto.Region;
+        profile.Phone = dto.Phone;
+        profile.Description = dto.Description;
+
+        await _db.SaveChangesAsync();
+        return ToDto(profile);
+    }
+
     public async Task<FarmerProfileDto?> GetByIdAsync(int id)
     {
         var profile = await _db.FarmerProfiles.FirstOrDefaultAsync(f => f.Id == id);

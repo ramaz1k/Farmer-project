@@ -3,12 +3,16 @@ import { Link } from 'react-router-dom'
 import { api, ApiError } from '../api'
 import { useAuth } from '../auth'
 
+const EMPTY = { name: '', region: '', phone: '', description: '' }
+
 export default function Profile() {
   const { user } = useAuth()
   const [profile, setProfile] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState('')
-  const [form, setForm] = useState({ name: '', region: '', phone: '', description: '' })
+  const [notice, setNotice] = useState('')
+  const [form, setForm] = useState(EMPTY)
+  const [editing, setEditing] = useState(false)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
@@ -42,13 +46,53 @@ export default function Profile() {
   }
 
   if (!loaded) return <p className="muted">Загрузка…</p>
-  if (error) return <div className="error">{error}</div>
 
-  if (profile) {
+  function set(field) {
+    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
+  }
+
+  function startEdit() {
+    setForm({
+      name: profile.name,
+      region: profile.region,
+      phone: profile.phone,
+      description: profile.description || '',
+    })
+    setError('')
+    setNotice('')
+    setEditing(true)
+  }
+
+  async function submit(e) {
+    e.preventDefault()
+    setError('')
+    setBusy(true)
+    try {
+      if (editing) {
+        const updated = await api('/farmers/me', { method: 'PUT', body: form })
+        setProfile(updated)
+        setEditing(false)
+        setNotice('Профиль обновлён.')
+      } else {
+        const created = await api('/farmers', { method: 'POST', body: form })
+        setProfile(created)
+        setNotice('Профиль создан — можно добавлять первое объявление.')
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // Профиль есть и его не редактируем — карточка
+  if (profile && !editing) {
     return (
       <div className="detail">
         <h1>Профиль фермера</h1>
         <p className="muted">{user.email}</p>
+        {error && <div className="error">{error}</div>}
+        {notice && <div className="success">{notice}</div>}
         <p>
           <strong>{profile.name}</strong>
         </p>
@@ -57,7 +101,10 @@ export default function Profile() {
         </p>
         <p>{profile.description || 'Без описания.'}</p>
         <div className="order-actions">
-          <Link to="/my-products" className="btn">
+          <button className="btn" onClick={startEdit}>
+            Изменить
+          </button>
+          <Link to="/my-products" className="btn btn-outline">
             Мои товары
           </Link>
           <Link to="/" className="btn btn-outline">
@@ -68,30 +115,15 @@ export default function Profile() {
     )
   }
 
-  function set(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
-  }
-
-  async function submit(e) {
-    e.preventDefault()
-    setError('')
-    setBusy(true)
-    try {
-      const created = await api('/farmers', { method: 'POST', body: form })
-      setProfile(created)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
+  // Форма: создание или редактирование
   return (
     <form className="form" onSubmit={submit}>
-      <h1>Создать профиль фермера</h1>
-      <p className="muted">
-        Аккаунт создан, но профиля пока нет — заполните поля, и он появится в каталоге.
-      </p>
+      <h1>{editing ? 'Редактировать профиль' : 'Создать профиль фермера'}</h1>
+      {!editing && (
+        <p className="muted">
+          Аккаунт создан, но профиля пока нет — заполните поля, и он появится в каталоге.
+        </p>
+      )}
       {error && <div className="error">{error}</div>}
       <label>
         Название (имя или хозяйство)
@@ -134,10 +166,30 @@ export default function Profile() {
           placeholder="Что вы выращиваете, как доставляете…"
         />
       </label>
-      <button className="btn" disabled={busy}>
-        {busy ? 'Создаём…' : 'Создать профиль'}
-      </button>
-      <p className="muted">Сразу после создания можно будет добавить первое объявление.</p>
+      <div className="order-actions">
+        <button className="btn" disabled={busy}>
+          {busy
+            ? 'Сохраняем…'
+            : editing
+              ? 'Сохранить'
+              : 'Создать профиль'}
+        </button>
+        {editing && (
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={() => {
+              setEditing(false)
+              setError('')
+            }}
+          >
+            Отмена
+          </button>
+        )}
+      </div>
+      {!editing && (
+        <p className="muted">Сразу после создания можно будет добавить первое объявление.</p>
+      )}
     </form>
   )
 }

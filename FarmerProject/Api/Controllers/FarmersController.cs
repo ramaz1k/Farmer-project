@@ -41,6 +41,14 @@ public class FarmersController : ControllerBase
         return profile is null ? NotFound() : Ok(profile);
     }
 
+    [Authorize(Roles = "Farmer")]
+    [HttpPut("me")]
+    public async Task<ActionResult<FarmerProfileDto>> UpdateMine(CreateFarmerProfileDto dto)
+    {
+        var profile = await _farmerService.UpdateMyProfileAsync(GetUserId(), dto);
+        return profile is null ? NotFound() : Ok(profile);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<FarmerProfileDto>> GetById(int id)
     {
