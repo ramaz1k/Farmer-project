@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, ApiError } from '../api'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 
 const CATEGORIES = [
   { id: 1, name: 'Фрукты' },
@@ -25,6 +26,7 @@ const EMPTY = {
 
 export default function MyProducts() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [profile, setProfile] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [products, setProducts] = useState([])
@@ -57,32 +59,33 @@ export default function MyProducts() {
       .finally(() => setLoaded(true))
   }, [user, load])
 
-  if (!user) return <p className="muted">Войдите в аккаунт.</p>
+  if (!user) return <p className="muted">{t('Войдите в аккаунт.')}</p>
 
   if (user.role !== 'Farmer') {
     return (
       <div className="detail">
-        <h1>Мои товары</h1>
+        <h1>{t('Мои товары')}</h1>
         <p className="muted">
-          Добавлять товары могут только фермеры. Вы вошли как{' '}
-          {user.role === 'Buyer' ? 'покупатель' : 'пользователь'}.
+          {t('Добавлять товары могут только фермеры. Вы вошли как {role}.', {
+            role: t(user.role === 'Buyer' ? 'покупатель' : 'пользователь'),
+          })}
         </p>
         <Link to="/" className="btn">
-          В каталог
+          {t('В каталог')}
         </Link>
       </div>
     )
   }
 
-  if (!loaded) return <p className="muted">Загрузка…</p>
+  if (!loaded) return <p className="muted">{t('Загрузка…')}</p>
 
   if (!profile) {
     return (
       <div className="detail">
-        <h1>Мои товары</h1>
-        <p className="muted">Сначала нужно профиль фермера — без него объявления не добавить.</p>
+        <h1>{t('Мои товары')}</h1>
+        <p className="muted">{t('Сначала нужно профиль фермера — без него объявления не добавить.')}</p>
         <Link to="/profile" className="btn">
-          Создать профиль
+          {t('Создать профиль')}
         </Link>
       </div>
     )
@@ -124,10 +127,10 @@ export default function MyProducts() {
     setError('')
     setNotice('')
 
-    if (!form.title.trim()) return setError('Название обязательно.')
-    if (!(Number(form.price) > 0)) return setError('Цена должна быть больше нуля.')
-    if (!(Number(form.stock) >= 0)) return setError('Остаток не может быть отрицательным.')
-    if (!form.unit.trim()) return setError('Укажите единицу измерения.')
+    if (!form.title.trim()) return setError(t('Название обязательно.'))
+    if (!(Number(form.price) > 0)) return setError(t('Цена должна быть больше нуля.'))
+    if (!(Number(form.stock) >= 0)) return setError(t('Остаток не может быть отрицательным.'))
+    if (!form.unit.trim()) return setError(t('Укажите единицу измерения.'))
 
     const body = {
       title: form.title.trim(),
@@ -145,12 +148,12 @@ export default function MyProducts() {
       if (editingId) {
         const updated = await api(`/products/${editingId}`, { method: 'PUT', body })
         setProducts((list) => list.map((p) => (p.id === editingId ? updated : p)))
-        setNotice(`Товар «${updated.title}» обновлён.`)
+        setNotice(t('Товар «{title}» обновлён.', { title: updated.title }))
         setEditingId(null)
       } else {
         const created = await api('/products', { method: 'POST', body })
         setProducts((list) => [created, ...list])
-        setNotice(`Товар «${created.title}» добавлен в каталог.`)
+        setNotice(t('Товар «{title}» добавлен в каталог.', { title: created.title }))
       }
       setForm(EMPTY)
     } catch (err) {
@@ -161,7 +164,7 @@ export default function MyProducts() {
   }
 
   async function remove(p) {
-    if (!window.confirm(`Удалить товар «${p.title}»?`)) return
+    if (!window.confirm(t('Удалить товар «{title}»?', { title: p.title }))) return
     setError('')
     setNotice('')
     try {
@@ -175,45 +178,47 @@ export default function MyProducts() {
 
   return (
     <>
-      <h1>Мои товары</h1>
+      <h1>{t('Мои товары')}</h1>
       <p className="muted">
-        Профиль: <strong>{profile.name}</strong> · {profile.region}
+        {t('Профиль:')} <strong>{profile.name}</strong> · {profile.region}
       </p>
 
       {error && <div className="error">{error}</div>}
       {notice && <div className="success">{notice}</div>}
 
       <form id="product-form" className="form" style={{ maxWidth: 560 }} onSubmit={submit}>
-        <h2 style={{ margin: 0 }}>{editingId ? 'Редактировать товар' : 'Новое объявление'}</h2>
+        <h2 style={{ margin: 0 }}>
+          {editingId ? t('Редактировать товар') : t('Новое объявление')}
+        </h2>
 
         <label>
-          Название
+          {t('Название')}
           <input
             value={form.title}
             onChange={set('title')}
             maxLength={200}
-            placeholder="Яблоки сезонные"
+            placeholder={t('Яблоки сезонные')}
             required
           />
         </label>
 
         <label>
-          Описание (необязательно)
+          {t('Описание (необязательно)')}
           <textarea
             value={form.description}
             onChange={set('description')}
             maxLength={2000}
             rows={3}
-            placeholder="Сорт, условия доставки, опт…"
+            placeholder={t('Сорт, условия доставки, опт…')}
           />
         </label>
 
         <label>
-          Категория
+          {t('Категория')}
           <select value={form.categoryId} onChange={set('categoryId')}>
             {CATEGORIES.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {t(c.name)}
               </option>
             ))}
           </select>
@@ -221,7 +226,7 @@ export default function MyProducts() {
 
         <div className="radio-row" style={{ gap: 16 }}>
           <label style={{ flex: 1 }}>
-            Цена, сом
+            {t('Цена, сом')}
             <input
               type="number"
               min="0.01"
@@ -233,7 +238,7 @@ export default function MyProducts() {
             />
           </label>
           <label style={{ width: 110 }}>
-            Единица
+            {t('Единица')}
             <input
               value={form.unit}
               onChange={set('unit')}
@@ -246,7 +251,7 @@ export default function MyProducts() {
 
         <div className="radio-row" style={{ gap: 16 }}>
           <label style={{ flex: 1 }}>
-            Остаток
+            {t('Остаток')}
             <input
               type="number"
               min="0"
@@ -258,7 +263,7 @@ export default function MyProducts() {
             />
           </label>
           <label style={{ flex: 1 }}>
-            Дата урожая (необязательно)
+            {t('Дата урожая (необязательно)')}
             <input type="date" value={form.harvestDate} onChange={set('harvestDate')} />
           </label>
         </div>
@@ -270,46 +275,49 @@ export default function MyProducts() {
               checked={form.isPreorder}
               onChange={set('isPreorder')}
             />
-            Это предзаказ
+            {t('Это предзаказ')}
           </label>
         </div>
 
         <div className="order-actions">
           <button className="btn" disabled={busy}>
-            {busy ? 'Сохраняем…' : editingId ? 'Сохранить' : 'Добавить в каталог'}
+            {busy ? t('Сохраняем…') : editingId ? t('Сохранить') : t('Добавить в каталог')}
           </button>
           {editingId && (
             <button type="button" className="btn btn-outline" onClick={cancelEdit}>
-              Отмена
+              {t('Отмена')}
             </button>
           )}
         </div>
       </form>
 
-      <h2>Объявления ({products.length})</h2>
+      <h2>{t('Объявления ({n})', { n: products.length })}</h2>
       {products.length === 0 && (
-        <p className="muted">Товаров пока нет — заполните форму выше.</p>
+        <p className="muted">{t('Товаров пока нет — заполните форму выше.')}</p>
       )}
 
       <div className="grid">
         {products.map((p) => (
           <div key={p.id} className="card">
+            <span className="card-emoji">🧺</span>
             <Link to={`/product/${p.id}`} className="title">
               {p.title}
             </Link>
             <span className="meta">
-              {p.categoryName} · {p.price} сом / {p.unit}
+              {t(p.categoryName)} · {p.price} {t('сом')} / {p.unit}
             </span>
             <span className="meta">
-              {p.stock > 0 ? `В наличии: ${p.stock} ${p.unit}` : 'Нет в наличии'}
-              {p.isPreorder ? ' · предзаказ' : ''}
+              {p.stock > 0
+                ? t('В наличии: {stock} {unit}', { stock: p.stock, unit: p.unit })
+                : t('Нет в наличии')}
+              {p.isPreorder ? ` · ${t('предзаказ')}` : ''}
             </span>
             <div className="order-actions">
               <button className="btn btn-small btn-outline" onClick={() => startEdit(p)}>
-                Изменить
+                {t('Изменить')}
               </button>
               <button className="btn btn-small btn-danger" onClick={() => remove(p)}>
-                Удалить
+                {t('Удалить')}
               </button>
             </div>
           </div>

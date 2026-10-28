@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useCart } from '../cart'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 
 export default function Cart() {
   const { items, setQuantity, remove, clear, total } = useCart()
   const { user } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -14,9 +16,9 @@ export default function Cart() {
   if (items.length === 0) {
     return (
       <>
-        <h1>Корзина</h1>
+        <h1>{t('Корзина')}</h1>
         <p className="muted">
-          Корзина пуста. <Link to="/">Перейти в каталог</Link>
+          {t('Корзина пуста.')} <Link to="/">{t('Перейти в каталог')}</Link>
         </p>
       </>
     )
@@ -27,7 +29,7 @@ export default function Cart() {
     setBusy(true)
     try {
       if (user?.role !== 'Buyer') {
-        throw new Error('Заказы может оформлять только покупатель')
+        throw new Error(t('Заказы может оформлять только покупатель'))
       }
 
       // API принимает в одном заказе только товары одного фермера —
@@ -64,12 +66,13 @@ export default function Cart() {
 
   return (
     <>
-      <h1>Корзина</h1>
+      <h1>{t('Корзина')}</h1>
       {error && <div className="error">{error}</div>}
       {farmerNames.length > 1 && (
         <div className="success">
-          В корзине товары разных фермеров — будет оформлено{' '}
-          {farmerNames.length} отдельных заказа.
+          {t('В корзине товары разных фермеров — будет оформлено {n} отдельных заказа.', {
+            n: farmerNames.length,
+          })}
         </div>
       )}
 
@@ -81,7 +84,7 @@ export default function Cart() {
                 <strong>{i.product.title}</strong>
               </Link>
               <div className="muted">
-                {i.product.farmerName} · {i.product.price} сом /{' '}
+                {i.product.farmerName} · {i.product.price} {t('сом')} /{' '}
                 {i.product.unit}
               </div>
             </div>
@@ -95,22 +98,21 @@ export default function Cart() {
               </button>
             </div>
             <strong>
-              {(Number(i.product.price) * i.quantity).toFixed(2)} сом
+              {(Number(i.product.price) * i.quantity).toFixed(2)} {t('сом')}
             </strong>
-            <button
-              className="link-btn"
-              onClick={() => remove(i.product.id)}
-            >
-              Убрать
+            <button className="link-btn" onClick={() => remove(i.product.id)}>
+              {t('Убрать')}
             </button>
           </div>
         </div>
       ))}
 
       <div className="order-head" style={{ marginTop: 20 }}>
-        <h2 style={{ margin: 0 }}>Итого: {total.toFixed(2)} сом</h2>
+        <h2 style={{ margin: 0 }}>
+          {t('Итого:')} {total.toFixed(2)} {t('сом')}
+        </h2>
         <button className="btn" onClick={checkout} disabled={busy}>
-          {busy ? 'Оформляем…' : 'Оформить заказ'}
+          {busy ? t('Оформляем…') : t('Оформить заказ')}
         </button>
       </div>
     </>

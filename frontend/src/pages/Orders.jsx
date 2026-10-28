@@ -2,8 +2,17 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
+
+const STATUS_LABEL = {
+  New: 'Новый',
+  Confirmed: 'Подтверждён',
+  Completed: 'Выдан',
+  Cancelled: 'Отменён',
+}
 
 function ReviewForm({ orderId, onDone }) {
+  const { t } = useI18n()
   const [rating, setRating] = useState(5)
   const [text, setText] = useState('')
   const [error, setError] = useState('')
@@ -42,14 +51,14 @@ function ReviewForm({ orderId, onDone }) {
       </div>
       <textarea
         rows={3}
-        placeholder="Ваш отзыв о фермере…"
+        placeholder={t('Ваш отзыв о фермере…')}
         value={text}
         onChange={(e) => setText(e.target.value)}
         style={{ margin: '10px 0', width: '100%', padding: 10 }}
       />
       {error && <div className="error">{error}</div>}
       <button className="btn btn-small" disabled={busy}>
-        {busy ? 'Отправляем…' : 'Оставить отзыв'}
+        {busy ? t('Отправляем…') : t('Оставить отзыв')}
       </button>
     </form>
   )
@@ -57,6 +66,7 @@ function ReviewForm({ orderId, onDone }) {
 
 export default function Orders() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [orders, setOrders] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -84,15 +94,16 @@ export default function Orders() {
   }
 
   if (user?.role !== 'Buyer') {
+    const role = t(user?.role === 'Farmer' ? 'фермер' : 'пользователь')
     return (
       <>
-        <h1>Мои заказы</h1>
+        <h1>{t('Мои заказы')}</h1>
         <p className="muted">
-          Заказы доступны только покупателям. Вы вошли как {user?.role === 'Farmer' ? 'фермер' : 'пользователь'}.
-        </p>
-        <p className="muted">
-          Для фермера заказы приходят во вкладку{' '}
-          <Link to="/incoming">«Входящие заказы»</Link>.
+          {user?.role === 'Farmer'
+            ? t('Заказы покупателей видны во вкладке {tab}.', {
+                tab: t('«Входящие заказы»'),
+              })
+            : t('Заказы доступны только покупателям. Вы вошли как {role}.', { role })}
         </p>
       </>
     )
@@ -100,13 +111,13 @@ export default function Orders() {
 
   return (
     <>
-      <h1>Мои заказы</h1>
+      <h1>{t('Мои заказы')}</h1>
       {error && <div className="error">{error}</div>}
       {notice && <div className="success">{notice}</div>}
-      {loading && <p className="muted">Загрузка…</p>}
+      {loading && <p className="muted">{t('Загрузка…')}</p>}
       {!loading && orders.length === 0 && (
         <p className="muted">
-          Заказов пока нет. <Link to="/">Перейти в каталог</Link>
+          {t('Заказов пока нет.')} <Link to="/">{t('Перейти в каталог')}</Link>
         </p>
       )}
 
@@ -114,12 +125,14 @@ export default function Orders() {
         <div key={o.id} className="order-card">
           <div className="order-head">
             <div>
-              <strong>Заказ №{o.id}</strong>{' '}
+              <strong>{t('Заказ №{id}', { id: o.id })}</strong>{' '}
               <span className="muted">
                 {new Date(o.createdAt).toLocaleString('ru-RU')}
               </span>
             </div>
-            <span className={`status status-${o.status}`}>{o.status}</span>
+            <span className={`status status-${o.status}`}>
+              {t(STATUS_LABEL[o.status])}
+            </span>
           </div>
 
           <ul className="order-items">
@@ -128,19 +141,24 @@ export default function Orders() {
                 <span>
                   {it.productTitle} × {it.quantity} {it.unit}{' '}
                   <span className="muted">
-                    ({it.priceAtOrder} сом/{it.unit})
+                    ({it.priceAtOrder} {t('сом')}/{it.unit})
                   </span>
                 </span>
-                <span>{(it.priceAtOrder * it.quantity).toFixed(2)} сом</span>
+                <span>
+                  {(it.priceAtOrder * it.quantity).toFixed(2)} {t('сом')}
+                </span>
               </li>
             ))}
           </ul>
 
           <div className="order-head">
             <span className="muted">
-              Фермер: <Link to={`/farmer/${o.farmerProfileId}`}>{o.farmerName}</Link>
+              {t('Фермер:')}{' '}
+              <Link to={`/farmer/${o.farmerProfileId}`}>{o.farmerName}</Link>
             </span>
-            <strong>{o.totalPrice} сом</strong>
+            <strong>
+              {o.totalPrice} {t('сом')}
+            </strong>
           </div>
 
           <div className="order-actions">
@@ -149,7 +167,7 @@ export default function Orders() {
                 className="btn btn-small btn-danger"
                 onClick={() => cancel(o.id)}
               >
-                Отменить заказ
+                {t('Отменить заказ')}
               </button>
             )}
             {o.status === 'Completed' && reviewFor !== o.id && (
@@ -160,7 +178,7 @@ export default function Orders() {
                   setNotice('')
                 }}
               >
-                Оставить отзыв
+                {t('Оставить отзыв')}
               </button>
             )}
           </div>
@@ -171,7 +189,9 @@ export default function Orders() {
                 orderId={o.id}
                 onDone={() => {
                   setReviewFor(null)
-                  setNotice(`Отзыв на заказ №${o.id} отправлен`)
+                  setNotice(
+                    t('Отзыв на заказ №{id} отправлен', { id: o.id }),
+                  )
                 }}
               />
             </div>

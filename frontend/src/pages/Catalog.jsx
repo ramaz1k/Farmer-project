@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
+import { useI18n } from '../i18n'
 
 const CATEGORIES = [
   { id: 1, name: 'Фрукты' },
@@ -23,6 +24,7 @@ const EMOJI = {
 const PAGE_SIZE = 8
 
 export default function Catalog() {
+  const { t } = useI18n()
   const [filters, setFilters] = useState({
     categoryId: '',
     region: '',
@@ -72,11 +74,12 @@ export default function Catalog() {
     <>
       <section className="hero">
         <div>
-          <span className="hero-kicker">Фермерский рынок Кыргызстана</span>
-          <h1>Свежие продукты напрямую с фермы</h1>
+          <span className="hero-kicker">{t('Фермерский рынок Таджикистана')}</span>
+          <h1>{t('Свежие продукты напрямую с фермы')}</h1>
           <p>
-            Фрукты, овощи, мёд и молочные продукты от местных фермеров — без
-            посредников, по честным ценам и с заботой о качестве.
+            {t(
+              'Фрукты, овощи, мёд и молочные продукты от местных фермеров — без посредников, по честным ценам и с заботой о качестве.',
+            )}
           </p>
         </div>
         <div className="hero-art" aria-hidden="true">
@@ -90,7 +93,7 @@ export default function Catalog() {
           className={`chip ${!filters.categoryId ? 'active' : ''}`}
           onClick={() => set('categoryId', '')}
         >
-          🧺 Все категории
+          🧺 {t('Все категории')}
         </button>
         {CATEGORIES.map((c) => (
           <button
@@ -99,41 +102,41 @@ export default function Catalog() {
             className={`chip ${String(filters.categoryId) === String(c.id) ? 'active' : ''}`}
             onClick={() => set('categoryId', String(c.id))}
           >
-            {EMOJI[c.id]} {c.name}
+            {EMOJI[c.id]} {t(c.name)}
           </button>
         ))}
       </div>
 
       <div className="filters">
         <input
-          placeholder="Регион (например, Khatlon)"
+          placeholder={t('Регион (например, Душанбе)')}
           value={filters.region}
           onChange={(e) => set('region', e.target.value)}
         />
         <input
-          placeholder="Поиск по названию"
+          placeholder={t('Поиск по названию')}
           value={filters.search}
           onChange={(e) => set('search', e.target.value)}
         />
         <input
           type="number"
-          placeholder="Цена от"
+          placeholder={t('Цена от')}
           value={filters.minPrice}
           onChange={(e) => set('minPrice', e.target.value)}
         />
         <input
           type="number"
-          placeholder="Цена до"
+          placeholder={t('Цена до')}
           value={filters.maxPrice}
           onChange={(e) => set('maxPrice', e.target.value)}
         />
       </div>
 
       {error && <div className="error">{error}</div>}
-      {loading && <p className="muted">Загрузка…</p>}
+      {loading && <p className="muted">{t('Загрузка…')}</p>}
 
       {!loading && !error && data.items.length === 0 && (
-        <p className="muted">Ничего не найдено. Попробуйте изменить фильтры.</p>
+        <p className="muted">{t('Ничего не найдено. Попробуйте изменить фильтры.')}</p>
       )}
 
       <div className="grid">
@@ -142,14 +145,16 @@ export default function Catalog() {
             <span className="card-emoji">{EMOJI[p.categoryId] || '🧺'}</span>
             <span className="title">{p.title}</span>
             <span className="meta">
-              {p.categoryName} · {p.farmerName} ({p.farmerRegion})
+              {t(p.categoryName)} · {p.farmerName} ({p.farmerRegion})
             </span>
             <span className="price">
-              {p.price} сом / {p.unit}
+              {p.price} {t('сом')} / {p.unit}
             </span>
             <span className="meta">
-              {p.stock > 0 ? `В наличии: ${p.stock} ${p.unit}` : 'Нет в наличии'}
-              {p.isPreorder ? ' · предзаказ' : ''}
+              {p.stock > 0
+                ? t('В наличии: {stock} {unit}', { stock: p.stock, unit: p.unit })
+                : t('Нет в наличии')}
+              {p.isPreorder ? ` · ${t('предзаказ')}` : ''}
             </span>
           </Link>
         ))}
@@ -162,17 +167,17 @@ export default function Catalog() {
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
           >
-            ← Назад
+            ← {t('Назад')}
           </button>
           <span className="muted">
-            Страница {page} из {totalPages}
+            {t('Страница {page} из {total}', { page, total: totalPages })}
           </span>
           <button
             className="btn btn-small btn-outline"
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}
           >
-            Вперёд →
+            {t('Вперёд →')}
           </button>
         </div>
       )}

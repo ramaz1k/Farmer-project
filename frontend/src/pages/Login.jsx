@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 
 export default function Login() {
   const { login } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,10 +28,10 @@ export default function Login() {
 
   return (
     <form className="form" onSubmit={submit}>
-      <h1>Вход</h1>
+      <h1>{t('Вход')}</h1>
       {error && <div className="error">{error}</div>}
       <label>
-        Почта
+        {t('Почта')}
         <input
           type="email"
           value={email}
@@ -38,7 +40,7 @@ export default function Login() {
         />
       </label>
       <label>
-        Пароль
+        {t('Пароль')}
         <input
           type="password"
           value={password}
@@ -47,10 +49,10 @@ export default function Login() {
         />
       </label>
       <button className="btn" disabled={busy}>
-        {busy ? 'Входим…' : 'Войти'}
+        {busy ? t('Входим…') : t('Войти')}
       </button>
       <p className="muted">
-        Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
+        {t('Нет аккаунта?')} <Link to="/register">{t('Зарегистрироваться')}</Link>
       </p>
     </form>
   )
@@ -58,6 +60,7 @@ export default function Login() {
 
 export function Register() {
   const { register } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -83,10 +86,10 @@ export function Register() {
 
   return (
     <form className="form" onSubmit={submit}>
-      <h1>Регистрация</h1>
+      <h1>{t('Регистрация')}</h1>
       {error && <div className="error">{error}</div>}
       <label>
-        Почта
+        {t('Почта')}
         <input
           type="email"
           value={email}
@@ -95,7 +98,7 @@ export function Register() {
         />
       </label>
       <label>
-        Пароль (минимум 6 символов)
+        {t('Пароль (минимум 6 символов)')}
         <input
           type="password"
           value={password}
@@ -111,7 +114,7 @@ export function Register() {
             checked={role === 0}
             onChange={() => setRole(0)}
           />
-          Покупатель
+          {t('Покупатель')}
         </label>
         <label>
           <input
@@ -119,14 +122,14 @@ export function Register() {
             checked={role === 1}
             onChange={() => setRole(1)}
           />
-          Фермер
+          {t('Фермер')}
         </label>
       </div>
       <button className="btn" disabled={busy}>
-        {busy ? 'Создаём…' : 'Создать аккаунт'}
+        {busy ? t('Создаём…') : t('Создать аккаунт')}
       </button>
       <p className="muted">
-        Уже есть аккаунт? <Link to="/login">Войти</Link>
+        {t('Уже есть аккаунта?')} <Link to="/login">{t('Войти')}</Link>
       </p>
     </form>
   )

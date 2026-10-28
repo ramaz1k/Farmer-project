@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 
 // Допустимые переходы статусов (как в OrderService.CanTransition)
 const ACTION = {
@@ -24,6 +25,7 @@ const STATUS_LABEL = {
 
 export default function Incoming() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -48,7 +50,9 @@ export default function Incoming() {
     if (
       to === 3 &&
       !window.confirm(
-        `Отменить заказ №${order.id}? Товары вернутся на склад, отменить отмену нельзя.`,
+        t('Отменить заказ №{id}? Товары вернутся на склад, отменить отмену нельзя.', {
+          id: order.id,
+        }),
       )
     )
       return
@@ -58,7 +62,14 @@ export default function Incoming() {
     try {
       await api(`/orders/${order.id}/status`, { method: 'PATCH', body: { status: to } })
       setNotice(
-        `Заказ №${order.id}: ${to === 1 ? 'подтверждён' : to === 2 ? 'выдан' : 'отменён'}`,
+        t(
+          to === 1
+            ? 'Заказ №{id}: подтверждён'
+            : to === 2
+              ? 'Заказ №{id}: выдан'
+              : 'Заказ №{id}: отменён',
+          { id: order.id },
+        ),
       )
       load()
     } catch (e) {
@@ -68,16 +79,20 @@ export default function Incoming() {
     }
   }
 
-  if (!user) return <p className="muted">Войдите в аккаунт.</p>
+  if (!user) return <p className="muted">{t('Войдите в аккаунт.')}</p>
 
   if (user.role !== 'Farmer') {
     return (
       <>
-        <h1>Входящие заказы</h1>
+        <h1>{t('Входящие заказы')}</h1>
         <p className="muted">
-          Входящие заказы видят только фермеры. Вы вошли как{' '}
-          {user.role === 'Buyer' ? 'покупатель' : 'пользователь'} — свои заказы смотрите во
-          вкладке <Link to="/orders">«Мои заказы»</Link>.
+          {t(
+            'Входящие заказы видят только фермеры. Вы вошли как {role} — свои заказы смотрите во вкладке {tab}.',
+            {
+              role: t(user.role === 'Buyer' ? 'покупатель' : 'пользователь'),
+              tab: t('«Мои заказы»'),
+            },
+          )}
         </p>
       </>
     )
@@ -85,14 +100,14 @@ export default function Incoming() {
 
   return (
     <>
-      <h1>Входящие заказы</h1>
+      <h1>{t('Входящие заказы')}</h1>
       {error && <div className="error">{error}</div>}
       {notice && <div className="success">{notice}</div>}
-      {loading && <p className="muted">Загрузка…</p>}
+      {loading && <p className="muted">{t('Загрузка…')}</p>}
 
       {!loading && orders.length === 0 && (
         <p className="muted">
-          Заказов пока нет. Добавьте товары во вкладке <Link to="/my-products">«Мои товары»</Link>.
+          {t('Заказов пока нет. Добавьте товары во вкладке «Мои товары».')}
         </p>
       )}
 
@@ -100,13 +115,15 @@ export default function Incoming() {
         <div key={o.id} className="order-card">
           <div className="order-head">
             <div>
-              <strong>Заказ №{o.id}</strong>{' '}
+              <strong>{t('Заказ №{id}', { id: o.id })}</strong>{' '}
               <span className="muted">{new Date(o.createdAt).toLocaleString('ru-RU')}</span>
             </div>
-            <span className={`status status-${o.status}`}>{o.status}</span>
+            <span className={`status status-${o.status}`}>{t(STATUS_LABEL[o.status])}</span>
           </div>
 
-          <p className="muted">Покупатель: {o.buyerEmail}</p>
+          <p className="muted">
+            {t('Покупатель:')} {o.buyerEmail}
+          </p>
 
           <ul className="order-items">
             {o.items.map((it, idx) => (
@@ -114,17 +131,21 @@ export default function Incoming() {
                 <span>
                   {it.productTitle} × {it.quantity} {it.unit}{' '}
                   <span className="muted">
-                    ({it.priceAtOrder} сом/{it.unit})
+                    ({it.priceAtOrder} {t('сом')}/{it.unit})
                   </span>
                 </span>
-                <span>{(it.priceAtOrder * it.quantity).toFixed(2)} сом</span>
+                <span>
+                  {(it.priceAtOrder * it.quantity).toFixed(2)} {t('сом')}
+                </span>
               </li>
             ))}
           </ul>
 
           <div className="order-head">
-            <span className="muted">{STATUS_LABEL[o.status] || o.status}</span>
-            <strong>{o.totalPrice} сом</strong>
+            <span className="muted">{t(STATUS_LABEL[o.status])}</span>
+            <strong>
+              {o.totalPrice} {t('сом')}
+            </strong>
           </div>
 
           {ACTION[o.status] && (
@@ -136,7 +157,7 @@ export default function Incoming() {
                   disabled={busyId === o.id}
                   onClick={() => changeStatus(o, a.to)}
                 >
-                  {busyId === o.id ? 'Сохраняем…' : a.label}
+                  {busyId === o.id ? t('Сохраняем…') : t(a.label)}
                 </button>
               ))}
             </div>

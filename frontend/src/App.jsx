@@ -1,6 +1,7 @@
 import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { useAuth } from './auth'
 import { useCart } from './cart'
+import { useI18n } from './i18n'
 import Catalog from './pages/Catalog'
 import ProductPage from './pages/Product'
 import FarmerPage from './pages/Farmer'
@@ -14,6 +15,7 @@ import Incoming from './pages/Incoming'
 function Header() {
   const { user, logout } = useAuth()
   const { items } = useCart()
+  const { t, lang, toggle } = useI18n()
   const navigate = useNavigate()
   const count = items.reduce((s, i) => s + i.quantity, 0)
 
@@ -24,14 +26,23 @@ function Header() {
         FarmMarket
       </Link>
       <nav>
-        <Link to="/">Каталог</Link>
-        <Link to="/orders">Мои заказы</Link>
+        <Link to="/">{t('Каталог')}</Link>
+        <Link to="/orders">{t('Мои заказы')}</Link>
         <Link to="/cart" className="cart-link">
-          Корзина{count > 0 && <span className="badge">{count}</span>}
+          {t('Корзина')}
+          {count > 0 && <span className="badge">{count}</span>}
         </Link>
-        {user?.role === 'Farmer' && <Link to="/incoming">Входящие заказы</Link>}
-        {user?.role === 'Farmer' && <Link to="/my-products">Мои товары</Link>}
-        {user?.role === 'Farmer' && <Link to="/profile">Мой профиль</Link>}
+        {user?.role === 'Farmer' && <Link to="/incoming">{t('Входящие заказы')}</Link>}
+        {user?.role === 'Farmer' && <Link to="/my-products">{t('Мои товары')}</Link>}
+        {user?.role === 'Farmer' && <Link to="/profile">{t('Мой профиль')}</Link>}
+        <button
+          type="button"
+          className="btn btn-small btn-outline lang-btn"
+          onClick={toggle}
+          title={lang === 'ru' ? 'Тоҷикӣ' : 'Русский'}
+        >
+          {lang === 'ru' ? 'Тоҷ' : 'Рус'}
+        </button>
         {user ? (
           <span className="user">
             {user.email}
@@ -42,12 +53,12 @@ function Header() {
                 navigate('/')
               }}
             >
-              Выйти
+              {t('Выйти')}
             </button>
           </span>
         ) : (
           <Link to="/login" className="btn btn-small">
-            Войти
+            {t('Войти')}
           </Link>
         )}
       </nav>
@@ -62,6 +73,8 @@ function RequireAuth({ children }) {
 }
 
 export default function App() {
+  const { t } = useI18n()
+
   return (
     <>
       <Header />
@@ -112,14 +125,16 @@ export default function App() {
               </RequireAuth>
             }
           />
-          <Route path="*" element={<p>Страница не найдена</p>} />
+          <Route path="*" element={<p>{t('Страница не найдена')}</p>} />
         </Routes>
       </main>
       <footer className="footer">
         <span>
-          <strong>🥕 FarmMarket</strong> — фермерский рынок Кыргызстана
+          <strong>🥕 FarmMarket</strong> {t('— фермерский рынок Таджикистана')}
         </span>
-        <span>Свежие продукты напрямую от фермеров · {new Date().getFullYear()}</span>
+        <span>
+          {t('Свежие продукты напрямую от фермеров')} · {new Date().getFullYear()}
+        </span>
       </footer>
     </>
   )

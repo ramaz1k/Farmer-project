@@ -137,6 +137,13 @@ button {
   color: var(--red);
 }
 
+.lang-btn {
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-left: 4px;
+}
+
 /* ── Контейнер и типографика ───────────────────── */
 
 .container {
