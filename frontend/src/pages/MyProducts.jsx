@@ -11,6 +11,8 @@ const CATEGORIES = [
   { id: 4, name: 'Мёд' },
   { id: 5, name: 'Мясо' },
   { id: 6, name: 'Молочные продукты' },
+  { id: 7, name: 'Зерновые' },
+  { id: 8, name: 'Хлопок' },
 ]
 
 const EMPTY = {
