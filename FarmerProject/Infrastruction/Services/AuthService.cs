@@ -58,4 +58,20 @@ public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         Role = user.Role.ToString()
     };
 }
+
+public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+{
+    var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+    if (user is null)
+        throw new InvalidOperationException("Пользователь не найден.");
+
+    if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+        throw new InvalidOperationException("Неверный текущий пароль.");
+
+    if (dto.CurrentPassword == dto.NewPassword)
+        throw new InvalidOperationException("Новый пароль должен отличаться от старого.");
+
+    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+    await _db.SaveChangesAsync();
+}
 }

@@ -45,6 +45,23 @@ public class AuthController : ControllerBase
         }
     }
     [Authorize]
+    [EnableRateLimiting("auth")]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        try
+        {
+            await _authService.ChangePasswordAsync(
+                int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), dto);
+            return Ok(new { message = "Пароль обновлён." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [Authorize]
 [HttpGet("me")]
 public IActionResult Me()
 {
