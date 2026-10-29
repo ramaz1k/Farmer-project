@@ -15,6 +15,7 @@ public class ProductDto
     public string CategoryName { get; set; } = string.Empty;
 
     public int FarmerProfileId { get; set; }
+    public int FarmerUserId { get; set; }
     public string FarmerName { get; set; } = string.Empty;
     public string FarmerRegion { get; set; } = string.Empty;
 }

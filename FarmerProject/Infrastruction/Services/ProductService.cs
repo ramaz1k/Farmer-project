@@ -29,6 +29,7 @@ public class ProductService : IProductService
         CategoryId = p.CategoryId,
         CategoryName = p.Category.Name,
         FarmerProfileId = p.FarmerProfileId,
+        FarmerUserId = p.FarmerProfile.UserId,
         FarmerName = p.FarmerProfile.Name,
         FarmerRegion = p.FarmerProfile.Region
     };
