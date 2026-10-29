@@ -483,3 +483,7 @@ $RECYCLE.BIN/
 
 # Frontend build output
 frontend/dist/
+
+# Загруженные фото товаров (лежат только на диске)
+FarmerProject/Api/wwwroot/uploads/*
+!FarmerProject/Api/wwwroot/uploads/.gitkeep

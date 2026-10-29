@@ -72,6 +72,10 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+// Раздача загруженных фото товаров из wwwroot/uploads
+Directory.CreateDirectory(Path.Combine(builder.Environment.WebRootPath, "uploads"));
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

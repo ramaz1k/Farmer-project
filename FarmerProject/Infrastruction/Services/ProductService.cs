@@ -26,6 +26,7 @@ public class ProductService : IProductService
         Stock = p.Stock,
         IsPreorder = p.IsPreorder,
         HarvestDate = p.HarvestDate,
+        ImageUrl = p.ImageUrl,
         CategoryId = p.CategoryId,
         CategoryName = p.Category.Name,
         FarmerProfileId = p.FarmerProfileId,
@@ -150,5 +151,18 @@ public async Task<bool> DeleteAsync(int userId, int id)
     await _db.SaveChangesAsync();
 
     return true;
+}
+
+    public async Task<ProductDto?> SetImageAsync(int userId, int id, string imageUrl)
+{
+    var product = await _db.Products
+        .FirstOrDefaultAsync(p => p.Id == id && p.FarmerProfile.UserId == userId);
+    if (product is null)
+        return null;
+
+    product.ImageUrl = imageUrl;
+    await _db.SaveChangesAsync();
+
+    return await GetByIdAsync(id);
 }
 }

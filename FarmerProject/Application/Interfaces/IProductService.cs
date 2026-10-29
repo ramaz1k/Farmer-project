@@ -8,4 +8,5 @@ public interface IProductService
     Task<ProductDto> CreateAsync(int userId, CreateProductDto dto);
     Task<ProductDto?> UpdateAsync(int userId, int id, CreateProductDto dto);
     Task<bool> DeleteAsync(int userId, int id);
+    Task<ProductDto?> SetImageAsync(int userId, int id, string imageUrl);
 }

@@ -10,6 +10,7 @@ public class ProductDto
     public decimal Stock { get; set; }
     public bool IsPreorder { get; set; }
     public DateTime? HarvestDate { get; set; }
+    public string? ImageUrl { get; set; }
 
     public int CategoryId { get; set; }
     public string CategoryName { get; set; } = string.Empty;

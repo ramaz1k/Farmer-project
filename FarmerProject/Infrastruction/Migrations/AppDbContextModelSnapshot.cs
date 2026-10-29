@@ -233,6 +233,9 @@ namespace Infrastruction.Migrations
                     b.Property<DateTime?>("HarvestDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsPreorder")
                         .HasColumnType("boolean");
 

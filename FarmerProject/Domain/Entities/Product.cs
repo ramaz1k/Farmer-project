@@ -10,6 +10,7 @@ public class Product
     public decimal Stock { get; set; }
     public bool IsPreorder { get; set; }
     public DateTime? HarvestDate { get; set; }
+    public string? ImageUrl { get; set; }
 
     public int FarmerProfileId { get; set; }
     public FarmerProfile FarmerProfile { get; set; } = null!;
