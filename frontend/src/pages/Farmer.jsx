@@ -54,7 +54,11 @@ export default function FarmerPage() {
       <div className="grid">
         {products.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="card">
-            <span className="card-emoji">🧺</span>
+            {p.imageUrl ? (
+              <img className="card-img" src={p.imageUrl} alt={p.title} loading="lazy" />
+            ) : (
+              <span className="card-emoji">🧺</span>
+            )}
             <span className="title">{p.title}</span>
             <span className="price">
               {p.price} {t('сом')} / {p.unit}

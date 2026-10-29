@@ -62,3 +62,30 @@ export async function api(path, { method = 'GET', body, auth = true } = {}) {
   }
   return data
 }
+
+// Загрузка файла (multipart) — например, фото товара
+export async function apiUpload(path, file) {
+  const fd = new FormData()
+  fd.append('photo', file)
+
+  const headers = {}
+  const token = getToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  const res = await fetch(path, { method: 'POST', headers, body: fd })
+  const text = await res.text()
+  let data = null
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      /* ответ не в JSON — оставляем null */
+    }
+  }
+
+  if (!res.ok) {
+    const message = data?.error || data?.title || `Ошибка ${res.status}`
+    throw new ApiError(res.status, message)
+  }
+  return data
+}

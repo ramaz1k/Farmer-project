@@ -44,6 +44,13 @@ export default function ProductPage() {
       <div className="detail">
         <div className="detail-grid">
           <div>
+            {product.imageUrl && (
+              <img
+                className="detail-img"
+                src={product.imageUrl}
+                alt={product.title}
+              />
+            )}
             <h1>{product.title}</h1>
             <p className="muted">
               {t(product.categoryName)} · {t('урожай')}{' '}

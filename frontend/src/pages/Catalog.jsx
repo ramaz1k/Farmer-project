@@ -146,7 +146,11 @@ export default function Catalog() {
       <div className="grid">
         {data.items.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="card">
-            <span className="card-emoji">{EMOJI[p.categoryId] || '🧺'}</span>
+            {p.imageUrl ? (
+              <img className="card-img" src={p.imageUrl} alt={p.title} loading="lazy" />
+            ) : (
+              <span className="card-emoji">{EMOJI[p.categoryId] || '🧺'}</span>
+            )}
             <span className="title">{p.title}</span>
             <span className="meta">
               {t(p.categoryName)} · {p.farmerName} ({p.farmerRegion})

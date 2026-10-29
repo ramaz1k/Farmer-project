@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { api, ApiError } from '../api'
+import { api, apiUpload, ApiError } from '../api'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
 
@@ -165,6 +165,20 @@ export default function MyProducts() {
     }
   }
 
+  async function uploadPhoto(p, file, input) {
+    if (input) input.value = ''
+    if (!file) return
+    setError('')
+    setNotice('')
+    try {
+      const updated = await apiUpload(`/products/${p.id}/photo`, file)
+      setProducts((list) => list.map((x) => (x.id === p.id ? updated : x)))
+      setNotice(t('Фото обновлено.'))
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   async function remove(p) {
     if (!window.confirm(t('Удалить товар «{title}»?', { title: p.title }))) return
     setError('')
@@ -301,7 +315,11 @@ export default function MyProducts() {
       <div className="grid">
         {products.map((p) => (
           <div key={p.id} className="card">
-            <span className="card-emoji">🧺</span>
+            {p.imageUrl ? (
+              <img className="card-img" src={p.imageUrl} alt={p.title} loading="lazy" />
+            ) : (
+              <span className="card-emoji">🧺</span>
+            )}
             <Link to={`/product/${p.id}`} className="title">
               {p.title}
             </Link>
@@ -315,6 +333,15 @@ export default function MyProducts() {
               {p.isPreorder ? ` · ${t('предзаказ')}` : ''}
             </span>
             <div className="order-actions">
+              <label className="btn btn-small btn-outline photo-btn" title={t('Фото')}>
+                📷 {p.imageUrl ? t('Заменить фото') : t('Добавить фото')}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  hidden
+                  onChange={(e) => uploadPhoto(p, e.target.files?.[0], e.target)}
+                />
+              </label>
               <button className="btn btn-small btn-outline" onClick={() => startEdit(p)}>
                 {t('Изменить')}
               </button>
