@@ -24,7 +24,9 @@ public class AppDbContext : DbContext
         new Category { Id = 3, Name = "Орехи и сухофрукты" },
         new Category { Id = 4, Name = "Мёд" },
         new Category { Id = 5, Name = "Мясо" },
-        new Category { Id = 6, Name = "Молочные продукты" }
+        new Category { Id = 6, Name = "Молочные продукты" },
+        new Category { Id = 7, Name = "Зерновые" },
+        new Category { Id = 8, Name = "Хлопок" }
     );
 modelBuilder.Entity<Review>().HasIndex(r => r.OrderId).IsUnique();
 }

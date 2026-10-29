@@ -68,6 +68,16 @@ namespace Infrastruction.Migrations
                         {
                             Id = 6,
                             Name = "Молочные продукты"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Зерновые"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Хлопок"
                         });
                 });
 
