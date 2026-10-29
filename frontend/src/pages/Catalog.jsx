@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../api'
 import { useI18n } from '../i18n'
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   { id: 1, name: 'Фрукты' },
   { id: 2, name: 'Овощи' },
   { id: 3, name: 'Орехи и сухофрукты' },
@@ -35,11 +35,22 @@ export default function Catalog() {
     search: '',
     minPrice: '',
     maxPrice: '',
+    sort: '',
   })
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
   const [page, setPage] = useState(1)
   const [data, setData] = useState({ items: [], totalCount: 0 })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // категории живут в БД — тянем с API, хардкод только как запасной вариант
+    api('/categories', { auth: false })
+      .then((res) => {
+        if (Array.isArray(res) && res.length > 0) setCategories(res)
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -52,6 +63,7 @@ export default function Catalog() {
       if (filters.search.trim()) params.set('search', filters.search.trim())
       if (filters.minPrice) params.set('minPrice', filters.minPrice)
       if (filters.maxPrice) params.set('maxPrice', filters.maxPrice)
+      if (filters.sort) params.set('sort', filters.sort)
       try {
         const res = await api(`/products?${params}`, { auth: false })
         setData(res)
@@ -99,7 +111,7 @@ export default function Catalog() {
         >
           🧺 {t('Все категории')}
         </button>
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <button
             key={c.id}
             type="button"
@@ -134,6 +146,16 @@ export default function Catalog() {
           value={filters.maxPrice}
           onChange={(e) => set('maxPrice', e.target.value)}
         />
+        <select
+          aria-label={t('Сортировка')}
+          value={filters.sort}
+          onChange={(e) => set('sort', e.target.value)}
+        >
+          <option value="">{t('По умолчанию')}</option>
+          <option value="price_asc">{t('Сначала дешёвые')}</option>
+          <option value="price_desc">{t('Сначала дорогие')}</option>
+          <option value="newest">{t('Сначала новые')}</option>
+        </select>
       </div>
 
       {error && <div className="error">{error}</div>}

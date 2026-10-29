@@ -4,7 +4,7 @@ import { api, apiUpload, ApiError } from '../api'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   { id: 1, name: 'Фрукты' },
   { id: 2, name: 'Овощи' },
   { id: 3, name: 'Орехи и сухофрукты' },
@@ -32,6 +32,7 @@ export default function MyProducts() {
   const [profile, setProfile] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [form, setForm] = useState(EMPTY)
@@ -43,6 +44,15 @@ export default function MyProducts() {
       auth: false,
     })
     setProducts(res.items)
+  }, [])
+
+  useEffect(() => {
+    // категории — из БД, хардкод только если API недоступен
+    api('/categories', { auth: false })
+      .then((res) => {
+        if (Array.isArray(res) && res.length > 0) setCategories(res)
+      })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -232,7 +242,7 @@ export default function MyProducts() {
         <label>
           {t('Категория')}
           <select value={form.categoryId} onChange={set('categoryId')}>
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {t(c.name)}
               </option>

@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: Object.fromEntries(
-      ['/auth', '/farmers', '/products', '/orders', '/reviews', '/messages', '/uploads'].map((p) => [
+      ['/auth', '/farmers', '/products', '/orders', '/reviews', '/messages', '/uploads', '/categories'].map((p) => [
         p,
         { target: API, changeOrigin: true },
       ]),
