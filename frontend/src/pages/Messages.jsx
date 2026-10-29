@@ -14,7 +14,8 @@ export default function Messages() {
 
   const load = useCallback(async () => {
     try {
-      setConversations(await api('/messages/conversations'))
+      const res = await api('/messages/conversations')
+      setConversations(Array.isArray(res) ? res : [])
       setError('')
     } catch (e) {
       setError(e.message)

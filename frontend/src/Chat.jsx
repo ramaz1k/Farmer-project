@@ -18,7 +18,8 @@ export default function Chat({ peerUserId, productId, peerName }) {
     try {
       const params = new URLSearchParams({ peerUserId: String(peerUserId) })
       if (productId) params.set('productId', String(productId))
-      setMessages(await api(`/messages/thread?${params}`))
+      const res = await api(`/messages/thread?${params}`)
+      setMessages(Array.isArray(res) ? res : [])
       setError('')
     } catch (e) {
       setError(e.message)
