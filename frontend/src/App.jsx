@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { api } from './api'
 import { useAuth } from './auth'
 import { useCart } from './cart'
 import { useI18n } from './i18n'
@@ -11,6 +13,7 @@ import Orders from './pages/Orders'
 import Profile from './pages/Profile'
 import MyProducts from './pages/MyProducts'
 import Incoming from './pages/Incoming'
+import Messages from './pages/Messages'
 
 function Header() {
   const { user, logout } = useAuth()
@@ -18,6 +21,29 @@ function Header() {
   const { t, lang, toggle } = useI18n()
   const navigate = useNavigate()
   const count = items.reduce((s, i) => s + i.quantity, 0)
+  const [unread, setUnread] = useState(0)
+
+  useEffect(() => {
+    if (!user) {
+      setUnread(0)
+      return undefined
+    }
+    let alive = true
+    const check = async () => {
+      try {
+        const n = await api('/messages/unread')
+        if (alive) setUnread(Number(n) || 0)
+      } catch {
+        /* тихо: счётчик не критичен */
+      }
+    }
+    check()
+    const timer = setInterval(check, 20000)
+    return () => {
+      alive = false
+      clearInterval(timer)
+    }
+  }, [user])
 
   return (
     <header className="header">
@@ -28,6 +54,10 @@ function Header() {
       <nav>
         <Link to="/">{t('Каталог')}</Link>
         <Link to="/orders">{t('Мои заказы')}</Link>
+        <Link to="/messages">
+          {t('Сообщения')}
+          {unread > 0 && <span className="badge">{unread}</span>}
+        </Link>
         <Link to="/cart" className="cart-link">
           {t('Корзина')}
           {count > 0 && <span className="badge">{count}</span>}
@@ -122,6 +152,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <Incoming />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <RequireAuth>
+                <Messages />
               </RequireAuth>
             }
           />

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { api } from '../api'
 import { useCart } from '../cart'
 import { useI18n } from '../i18n'
+import Chat from '../Chat'
 
 export default function ProductPage() {
   const { id } = useParams()
@@ -13,6 +14,7 @@ export default function ProductPage() {
   const [error, setError] = useState('')
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
 
   useEffect(() => {
     setError('')
@@ -107,9 +109,27 @@ export default function ProductPage() {
                 </button>
               </>
             )}
+
+            <button
+              type="button"
+              className="btn btn-outline chat-toggle"
+              onClick={() => setChatOpen((o) => !o)}
+            >
+              💬 {t('Написать фермеру')}
+            </button>
           </div>
         </div>
       </div>
+
+      {chatOpen && (
+        <div className="detail chat-wrap">
+          <Chat
+            peerUserId={product.farmerUserId}
+            productId={product.id}
+            peerName={product.farmerName}
+          />
+        </div>
+      )}
 
       <h2>{t('Отзывы о фермере')}</h2>
       {reviews.length === 0 && <p className="muted">{t('Отзывов пока нет.')}</p>}

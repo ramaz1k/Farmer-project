@@ -681,6 +681,144 @@ h2 {
   color: var(--text);
 }
 
+/* ── Чат ──────────────────────────────────────── */
+
+.chat-toggle {
+  margin-top: 14px;
+  width: 100%;
+}
+
+.chat-wrap {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-head {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.chat-box {
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #f4f7f3;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.msg {
+  align-self: flex-end;
+  max-width: 78%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px 14px 4px 14px;
+  box-shadow: 0 1px 2px rgba(24, 36, 28, 0.05);
+}
+
+.msg.me {
+  align-self: flex-start;
+  background: var(--green-soft);
+  border-color: #cfe8d7;
+  border-radius: 14px 14px 14px 4px;
+}
+
+.msg-text {
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.msg-time {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+  background: #fbfcfa;
+}
+
+.chat-form input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(47, 143, 78, 0.15);
+}
+
+/* ── Список чатов ─────────────────────────────── */
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.conv {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.conv:hover {
+  border-color: var(--green);
+  transform: translateY(-1px);
+}
+
+.conv-name {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.conv-product {
+  font-size: 13px;
+  color: var(--green-dark);
+}
+
+.conv-last {
+  font-size: 14px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conv-time {
+  font-size: 12px;
+}
+
 /* ── Адаптив ───────────────────────────────────── */
 
 @media (max-width: 760px) {
