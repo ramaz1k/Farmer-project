@@ -21,6 +21,7 @@ builder.Services.AddScoped<IFarmerService, FarmerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

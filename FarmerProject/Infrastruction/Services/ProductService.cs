@@ -59,8 +59,15 @@ public async Task<PagedResult<ProductDto>> GetAllAsync(ProductQueryDto query)
 
     var total = await products.CountAsync();
 
-    var items = await products
-        .OrderBy(p => p.Id)
+    var ordered = query.Sort switch
+    {
+        "price_asc" => products.OrderBy(p => p.Price),
+        "price_desc" => products.OrderByDescending(p => p.Price),
+        "newest" => products.OrderByDescending(p => p.Id),
+        _ => products.OrderBy(p => p.Id)
+    };
+
+    var items = await ordered
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
         .Select(ToDto)

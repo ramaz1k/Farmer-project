@@ -11,6 +11,9 @@ public class ProductQueryDto
     public decimal? MaxPrice { get; set; }
     public int? FarmerProfileId { get; set; }
 
+    // price_asc | price_desc | newest | пусто — исходный порядок по id
+    public string? Sort { get; set; }
+
     [Range(1, int.MaxValue)]
     public int Page { get; set; } = 1;
 
