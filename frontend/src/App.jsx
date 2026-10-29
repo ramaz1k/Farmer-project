@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import MyProducts from './pages/MyProducts'
 import Incoming from './pages/Incoming'
 import Messages from './pages/Messages'
+import About from './pages/About'
 
 function Header() {
   const { user, logout } = useAuth()
@@ -155,20 +156,15 @@ export default function App() {
               </RequireAuth>
             }
           />
-          <Route
-            path="/messages"
-            element={
-              <RequireAuth>
-                <Messages />
-              </RequireAuth>
-            }
-          />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<p>{t('Страница не найдена')}</p>} />
         </Routes>
       </main>
       <footer className="footer">
         <span>
-          <strong>🥕 FarmMarket</strong> {t('— фермерский рынок Таджикистана')}
+          <strong>🥕 FarmMarket</strong> {t('— фермерский рынок Таджикистана')} ·{' '}
+          <Link to="/about">{t('О проекте')}</Link>
         </span>
         <span>
           {t('Свежие продукты напрямую от фермеров')} · {new Date().getFullYear()}
